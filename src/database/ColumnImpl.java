@@ -7,6 +7,13 @@ import java.util.List;
 class ColumnImpl implements Column {
     String header;
     ArrayList<String> cell;
+
+    int longgest = 0;
+
+    ColumnImpl(String header){
+        this.header = header;
+        cell = new ArrayList<>();
+    }
     @Override
     public String getHeader() {
         return header;
