@@ -1,12 +1,10 @@
 package database;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 
 public class Database {
     // 테이블명이 같으면 같은 테이블로 간주된다.
@@ -14,7 +12,10 @@ public class Database {
 
     // 테이블 이름 목록을 출력한다.
     public static void showTables() {
-
+        Iterator<Table>  iterator = tables.iterator();
+        while(iterator.hasNext()){
+            System.out.println(iterator.next().getName());
+        }
     }
 
     /**
@@ -28,13 +29,18 @@ public class Database {
      *            String 타입의 데이터는 ("), ('), (,)는 포함하지 않는 것으로 가정한다.
      */
     public static void createTable(File csv) throws FileNotFoundException {
-
-    }
+        tables.add(new TableImpl(csv));
+    }//완
 
     // tableName과 테이블명이 같은 테이블을 리턴한다. 없으면 null 리턴.
     public static Table getTable(String tableName) {
+        Iterator<Table> iterator = tables.iterator();
+        while(iterator.hasNext()){
+            Table tmp = iterator.next();
+            if(tmp.getName().equals(tableName)) return tmp;
+        }
         return null;
-    }
+    }///완
 
     /**
      * @return 정렬된 새로운 Table 객체를 반환한다. 즉, 첫 번째 매개변수 Table은 변경되지 않는다.

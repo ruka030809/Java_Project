@@ -17,7 +17,7 @@ public class Test {
         Database.createTable(new File("rsc/books.csv"));
 
 //        2) 데이터베이스의 테이블 목록을 출력
-//        Database.showTables();
+        //Database.showTables();
 
 //        3) 데이터베이스로부터 테이블을 얻는다.
         Table books = Database.getTable("books");
