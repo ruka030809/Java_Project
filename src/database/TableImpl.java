@@ -72,7 +72,7 @@ class TableImpl implements Table {
     public void show() {
         for(int i = 0; i<columns.size(); i++){
             columns.get(i).longgest = columns.get(i).header.length();
-            for (int j = 0; j<columns.size(); j++){
+            for (int j = 0; j<columns.get(0).cell.size(); j++){
                 if(columns.get(i).getValue(j) == null) columns.get(i).longgest = Math.max(4,columns.get(i).longgest);
                 else columns.get(i).longgest = Math.max(columns.get(i).getValue(j).length(),columns.get(i).longgest);
             }
@@ -93,7 +93,22 @@ class TableImpl implements Table {
 
     @Override
     public void describe() {
-
+        System.out.println("<database.Table@"+Integer.toHexString(hashCode())+">");
+        System.out.println("RangeIndex: " + columns.get(0).cell.size() +" entries, 0 to " + (columns.get(0).cell.size()-1));
+        System.out.println("Data columns (total " + columns.size() + " columns):");
+        int maxNum = (""+columns.size()).length();
+        int maxCol = 6;
+        int maxNon = 14;
+        for(int i = 0; i<columns.size(); i++){
+            maxCol = Math.max(maxCol,columns.get(i).getHeader().length());
+            maxNon = Math.max(maxNon, (columns.get(i).nonNull()+" non-null" ).length());
+        }
+        System.out.printf(" %"+maxNum+"s |" + " %" +maxCol+"s |" + " %" +maxNon+"s |" +" Dtype","#","Column","Non-Null Count");
+        System.out.println();
+        for(int i = 0; i<columns.size(); i++){
+            System.out.printf(" %"+maxNum+"s |" + " %" +maxCol+"s |" + " %" +maxNon+"s |" +" %s",""+i,columns.get(i).header,columns.get(i).nonNull()+" non-null", columns.get(i).isNumericColumn()?"int":"String");
+            System.out.println();
+        }
     }
 
     @Override

@@ -9,7 +9,12 @@ class ColumnImpl implements Column {
     ArrayList<String> cell;
 
     int longgest = 0;
-
+    int nonNull(){
+        int cnt = cell.size();
+        for(int i = 0; i< cell.size(); i++)
+            if(cell.get(i) == null) cnt--;
+        return cnt;
+    }
     ColumnImpl(String header){
         this.header = header;
         cell = new ArrayList<>();
@@ -64,13 +69,13 @@ class ColumnImpl implements Column {
                 returnDouble = Double.parseDouble(cell.get(0));
             }
             catch (Exception f){
-                return true;
+                return false;
             }
-            return false;
+            return true;
         }
 
-        return false;
-    } // 대충 맞게 구현한  것 같은데 나중에 확인하기
+        return true;
+    } // 다시 구현
 
     @Override
     public long getNullCount() {
