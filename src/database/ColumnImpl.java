@@ -9,6 +9,14 @@ class ColumnImpl implements Column {
     ArrayList<String> cell;
 
     int longgest = 0;
+
+    ColumnImpl getColumnPartition(int startIndex, int endIndex){
+        ColumnImpl column = new ColumnImpl(header);
+        for(int i = startIndex; i<=endIndex; i++){
+            column.cell.add(this.cell.get(i));
+        }
+        return column;
+    }
     int nonNull(){
         int cnt = cell.size();
         for(int i = 0; i< cell.size(); i++)
@@ -59,22 +67,38 @@ class ColumnImpl implements Column {
 
     @Override
     public boolean isNumericColumn() {
-        int returnInt;
-        double returnDouble;
-        try {
-                returnInt = Integer.parseInt(cell.get(0));
-        }
-        catch(Exception e){
-            try{
-                returnDouble = Double.parseDouble(cell.get(0));
+        for(int i = 0; i< cell.size(); i++){
+            try {
+                if(cell.get(i) == null) continue;
+                else Integer.parseInt(cell.get(i));
             }
-            catch (Exception f){
-                return false;
+            catch (Exception e){
+                try {
+                    Double.parseDouble(cell.get(i));
+                }
+                catch (Exception f){
+                    return false;
+                }
             }
             return true;
         }
-
         return true;
+//        int returnInt;
+//        double returnDouble;
+//        try {
+//                returnInt = Integer.parseInt(cell.get(0));
+//        }
+//        catch(Exception e){
+//            try{
+//                returnDouble = Double.parseDouble(cell.get(0));
+//            }
+//            catch (Exception f){
+//                return false;
+//            }
+//            return true;
+//        }
+//
+//        return true;
     } // 다시 구현
 
     @Override

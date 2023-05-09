@@ -13,7 +13,7 @@ class TableImpl implements Table {
 
     String name;
     List<ColumnImpl> columns = new ArrayList<>();
-
+    TableImpl(){ }
     TableImpl(File f) throws FileNotFoundException {
         String[] str = f.getName().split(".csv");
         name = str[0];
@@ -109,32 +109,74 @@ class TableImpl implements Table {
             System.out.printf(" %"+maxNum+"s |" + " %" +maxCol+"s |" + " %" +maxNon+"s |" +" %s",""+i,columns.get(i).header,columns.get(i).nonNull()+" non-null", columns.get(i).isNumericColumn()?"int":"String");
             System.out.println();
         }
+        int intCnt = 0, StringCnt = 0;
+        for (int i = 0; i<columns.size(); i++){
+            if(columns.get(i).isNumericColumn()) intCnt++;
+            else StringCnt++;
+        }
+
+        System.out.printf("dtypes: int(%d), String(%d)", intCnt, StringCnt);
+        System.out.println();
     }
 
     @Override
     public Table head() {
-        return null;
+        int lineCount = Math.min(5,columns.get(0).cell.size());
+        TableImpl table = new TableImpl();
+        table.name = this.getName();
+        for(int i = 0; i<columns.size(); i++){
+            table.columns.add(columns.get(i).getColumnPartition(0,lineCount-1));
+        }
+        return table;
     }
 
     @Override
     public Table head(int lineCount) {
-        return null;
+        lineCount = Math.min(lineCount,columns.get(0).cell.size());
+        TableImpl table = new TableImpl();
+        table.name = this.getName();
+        for(int i = 0; i<columns.size(); i++){
+            table.columns.add(columns.get(i).getColumnPartition(0,lineCount-1));
+        }
+        return table;
     }
 
     @Override
     public Table tail() {
-        return null;
+        int lineCount = Math.min(5,columns.get(0).cell.size()); //4
+        int startIndex = columns.get(0).cell.size() - lineCount;
+        int endIndex = columns.get(0).cell.size() - 1;
+        TableImpl table = new TableImpl();
+        table.name = this.getName();
+        for (int i = 0; i<columns.size(); i++){
+            table.columns.add(columns.get(i).getColumnPartition(startIndex,endIndex));
+        }
+        return table;
     }
 
     @Override
     public Table tail(int lineCount) {
-        return null;
+        lineCount = Math.min(lineCount,columns.get(0).cell.size()); //4
+        int startIndex = columns.get(0).cell.size() - lineCount;
+        int endIndex = columns.get(0).cell.size() - 1;
+        TableImpl table = new TableImpl();
+        table.name = this.getName();
+        for (int i = 0; i<columns.size(); i++){
+            table.columns.add(columns.get(i).getColumnPartition(startIndex,endIndex));
+        }
+        return table;
+
     }
 
     @Override
     public Table selectRows(int beginIndex, int endIndex) {
-        return null;
-    }
+        TableImpl table = new TableImpl();
+        table.name = this.getName();
+        for (int i = 0; i<columns.size(); i++){
+            table.columns.add(columns.get(i).getColumnPartition(beginIndex,endIndex-1));
+        }
+        return table;
+    } // 예외 발생 가능
 
     @Override
     public Table selectRowsAt(int... indices) {

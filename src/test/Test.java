@@ -35,33 +35,33 @@ public class Test {
         Table headTable;
 
 //        5) 처음 5줄 출력 (새 테이블)
-//        testTable.head().show();
-//        headTable = testTable.head();
-//        System.out.println("identity test for head(): " + (testTable.equals(headTable) ? "Fail" : "Pass"));
+        testTable.head().show();
+        headTable = testTable.head();
+        System.out.println("identity test for head(): " + (testTable.equals(headTable) ? "Fail" : "Pass"));
 
 //        6) 지정한 처음 n줄 출력 (새 테이블)
-//        testTable.head(10).show();
-//        headTable = testTable.head(10);
-//        System.out.println("identity test for head(n): " + (testTable.equals(headTable) ? "Fail" : "Pass"));
+        testTable.head(10).show();
+        headTable = testTable.head(10);
+        System.out.println("identity test for head(n): " + (testTable.equals(headTable) ? "Fail" : "Pass"));
 
         Table tailTable;
 
 //        7) 마지막 5줄 출력 (새 테이블)
-//        testTable.tail().show();
-//        tailTable = testTable.tail();
-//        System.out.println("identity test for tail(): " + (testTable.equals(tailTable) ? "Fail" : "Pass"));
+        testTable.tail().show();
+        tailTable = testTable.tail();
+        System.out.println("identity test for tail(): " + (testTable.equals(tailTable) ? "Fail" : "Pass"));
 
 //        8) 지정한 마지막 n줄 출력 (새 테이블)
-//        testTable.tail(10).show();
-//        tailTable = testTable.tail(10);
-//        System.out.println("identity test for tail(n): " + (testTable.equals(tailTable) ? "Fail" : "Pass"));
+        testTable.tail(10).show();
+        tailTable = testTable.tail(10);
+        System.out.println("identity test for tail(n): " + (testTable.equals(tailTable) ? "Fail" : "Pass"));
 
         Table selectedRowsTable;
 
 //        9) 지정한 행 인덱스 범위(begin<=, <end)의 서브테이블을 얻는다. (새 테이블), 존재하지 않는 행 인덱시 전달시 예외발생해도 됨.
-//        testTable.selectRows(0, 5).show();
-//        selectedRowsTable = testTable.selectRows(0, 5);
-//        System.out.println("identity test for selectRows(range): " + (testTable.equals(selectedRowsTable) ? "Fail" : "Pass"));
+        testTable.selectRows(0, 5).show();
+        selectedRowsTable = testTable.selectRows(0, 5);
+        System.out.println("identity test for selectRows(range): " + (testTable.equals(selectedRowsTable) ? "Fail" : "Pass"));
 
 //        10) 지정한 행 인덱스로만 구성된 서브테이블을 얻는다. (새 테이블), 존재하지 않는 행 인덱시 전달시 예외발생해도 됨.
 //        testTable.selectRowsAt(7, 0, 4).show();
