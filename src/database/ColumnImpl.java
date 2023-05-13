@@ -17,6 +17,14 @@ class ColumnImpl implements Column {
         }
         return column;
     }
+
+    ColumnImpl selectRow(int... indices){
+        ColumnImpl column = new ColumnImpl(header);
+        for(int tmp : indices){
+            column.cell.add(this.cell.get(tmp));
+        }
+        return column;
+    }
     int nonNull(){
         int cnt = cell.size();
         for(int i = 0; i< cell.size(); i++)

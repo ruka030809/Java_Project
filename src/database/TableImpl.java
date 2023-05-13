@@ -45,12 +45,59 @@ class TableImpl implements Table {
 
     @Override
     public Table crossJoin(Table rightTable) {
-         return null;
+        TableImpl table = new TableImpl();
+        table.name = this.getName();
+        for(int i = 0; i<columns.size(); i++){
+            ColumnImpl column = new ColumnImpl(getName()+"."+getColumn(i).getHeader());
+            for(int j = 0; j<getColumn(i).count(); j++){
+                for(int k = 0; k<rightTable.getColumn(0).count(); k++){
+                    column.cell.add(getColumn(i).getValue(j));
+                    //table.columns.get(i).cell.add(this.columns.get(i).cell.get(j));
+                }
+            }
+            table.columns.add(column);
+        }
+        for(int i = 0; i<rightTable.getColumnCount(); i++){
+            ColumnImpl column = new ColumnImpl(rightTable.getName()+"."+rightTable.getColumn(i).getHeader());
+            for(int j = 0; j<getColumn(0).count(); j++){
+                for(int k = 0; k<rightTable.getColumn(i).count(); k++){
+                    column.cell.add(rightTable.getColumn(i).getValue(k));
+                }
+            }
+            table.columns.add(column);
+        }
+
+         return table;
     }
 
     @Override
     public Table innerJoin(Table rightTable, List<JoinColumn> joinColumns) {
-        return null;
+        String leftHeader = joinColumns.get(0).getColumnOfThisTable();
+        String rightHeader = joinColumns.get(0).getColumnOfAnotherTable();
+        TableImpl table = new TableImpl();
+        table.name = this.getName();
+        for(int i = 0; i<columns.size(); i++){
+            ColumnImpl column = new ColumnImpl(getName()+"."+getColumn(i).getHeader());
+            for(int j = 0; j<getColumn(i).count(); j++){
+                for(int k = 0; k<rightTable.getColumn(0).count(); k++){
+                    if(getColumn(leftHeader).getValue(j).equals(rightTable.getColumn(rightHeader).getValue(k)))
+                        column.cell.add(getColumn(i).getValue(j));
+                }
+            }
+            table.columns.add(column);
+        }
+        for(int i = 0; i<rightTable.getColumnCount(); i++){
+            ColumnImpl column = new ColumnImpl(rightTable.getName()+"."+rightTable.getColumn(i).getHeader());
+            for(int j = 0; j<getColumn(0).count(); j++){
+                for(int k = 0; k<rightTable.getColumn(i).count(); k++){
+                    if(getColumn(leftHeader).getValue(j).equals(rightTable.getColumn(rightHeader).getValue(k)))
+                        column.cell.add(rightTable.getColumn(i).getValue(k));
+                }
+            }
+            table.columns.add(column);
+        }
+
+        return table;
     }
 
     @Override
@@ -180,17 +227,34 @@ class TableImpl implements Table {
 
     @Override
     public Table selectRowsAt(int... indices) {
-        return null;
-    }
+        TableImpl table = new TableImpl();
+        table.name = this.getName();
+        for(int i = 0; i<columns.size(); i++){
+
+            table.columns.add(columns.get(i).selectRow(indices));
+
+        }
+        return table;
+    }//다시
 
     @Override
     public Table selectColumns(int beginIndex, int endIndex) {
-        return null;
-    }
+        TableImpl table = new TableImpl();
+        table.name = this.getName();
+        for(int i = beginIndex; i<endIndex; i++){
+            table.columns.add(this.columns.get(i));//
+        }
+        return table;
+    } // 이거 칼럼도 새로 생생해서 add해주는 게 더 나을듯 아래 selectColumnsAt 도 똑같이 수정하기.
 
     @Override
     public Table selectColumnsAt(int... indices) {
-        return null;
+        TableImpl table = new TableImpl();
+        table.name = this.getName();
+        for(int i : indices){
+            table.columns.add(this.columns.get(i));//
+        }
+        return table;
     }
 
     @Override
@@ -199,27 +263,58 @@ class TableImpl implements Table {
     }
 
     @Override
-    public Table sort(int byIndexOfColumn, boolean isAscending, boolean isNullFirst) {
-        return null;
+    public Table sort(int byIndexOfColumn, boolean isAscending, boolean isNullFirst){
+        final int columnIndex = byIndexOfColumn;
+
+        final Comparator<String> comparator;
+        if (isAscending) {
+            comparator = Comparator.nullsLast(Comparator.naturalOrder());
+        } else {
+            comparator = Comparator.nullsFirst(Comparator.reverseOrder());
+        }
+
+        List<String[]> rows = new ArrayList<>();
+        int numRows = columns.get(0).cell.size();
+        for (int i = 0; i < numRows; i++) {
+            String[] row = new String[columns.size()];
+            for (int j = 0; j < columns.size(); j++) {
+                row[j] = columns.get(j).cell.get(i);
+            }
+            rows.add(row);
+        }
+
+        rows.sort((row1, row2) -> comparator.compare(row1[columnIndex], row2[columnIndex]));
+
+        for (int i = 0; i < columns.size(); i++) {
+            List<String> cell = columns.get(i).cell;
+            for (int j = 0; j < numRows; j++) {
+                cell.set(j, rows.get(j)[i]);
+            }
+        }
+
+        return this;
     }
 
     @Override
     public int getRowCount() {
-        return 0;
+        return columns.get(0).cell.size();
     }
 
     @Override
     public int getColumnCount() {
-        return 0;
+        return columns.size();
     }
 
     @Override
     public Column getColumn(int index) {
-        return null;
+        return columns.get(index);
     }
 
     @Override
     public Column getColumn(String name) {
+        for (Column tmp: columns){
+            if(tmp.getHeader().equals(name)) return tmp;
+        }
         return null;
     }
 }

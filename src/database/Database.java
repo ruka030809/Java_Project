@@ -47,6 +47,8 @@ public class Database {
      * @param byIndexOfColumn 정렬 기준 컬럼, 존재하지 않는 컬럼 인덱스 전달시 예외 발생시켜도 됨.
      */
     public static Table sort(Table table, int byIndexOfColumn, boolean isAscending, boolean isNullFirst) {
-        return null;
+        Table returnTable = table.selectRows(0,table.getRowCount());
+        returnTable.sort(byIndexOfColumn,isAscending,isNullFirst);
+        return returnTable;
     }
 }
