@@ -20,8 +20,8 @@ class TableImpl implements Table {
         Scanner sc = new Scanner(f);
         String line = sc.nextLine();
         String[] headers = line.split(",");
-        for(int i = 0; i<headers.length; i++){
-            ColumnImpl column = new ColumnImpl(headers[i]);
+        for (String header : headers) {
+            ColumnImpl column = new ColumnImpl(header);
             columns.add(column);
         }
         while(sc.hasNext()){
@@ -80,8 +80,11 @@ class TableImpl implements Table {
             ColumnImpl column = new ColumnImpl(getName()+"."+getColumn(i).getHeader());
             for(int j = 0; j<getColumn(i).count(); j++){
                 for(int k = 0; k<rightTable.getColumn(0).count(); k++){
-                    if(getColumn(leftHeader).getValue(j).equals(rightTable.getColumn(rightHeader).getValue(k)))
-                        column.cell.add(getColumn(i).getValue(j));
+                    try {
+                        if (getColumn(leftHeader).getValue(j).equals(rightTable.getColumn(rightHeader).getValue(k)))
+                            column.cell.add(getColumn(i).getValue(j));
+                    }
+                    catch (Exception e){}
                 }
             }
             table.columns.add(column);
@@ -90,8 +93,11 @@ class TableImpl implements Table {
             ColumnImpl column = new ColumnImpl(rightTable.getName()+"."+rightTable.getColumn(i).getHeader());
             for(int j = 0; j<getColumn(0).count(); j++){
                 for(int k = 0; k<rightTable.getColumn(i).count(); k++){
-                    if(getColumn(leftHeader).getValue(j).equals(rightTable.getColumn(rightHeader).getValue(k)))
-                        column.cell.add(rightTable.getColumn(i).getValue(k));
+                    try {
+                        if (getColumn(leftHeader).getValue(j).equals(rightTable.getColumn(rightHeader).getValue(k)))
+                            column.cell.add(rightTable.getColumn(i).getValue(k));
+                    }
+                    catch (Exception e){}
                 }
             }
             table.columns.add(column);
@@ -102,12 +108,130 @@ class TableImpl implements Table {
 
     @Override
     public Table outerJoin(Table rightTable, List<JoinColumn> joinColumns) {
-        return null;
-    }
+        String leftHeader = joinColumns.get(0).getColumnOfThisTable();
+        String rightHeader = joinColumns.get(0).getColumnOfAnotherTable();
+        TableImpl table = new TableImpl();
+        table.name = this.getName();
+        for(int i = 0; i<columns.size(); i++){
+            ColumnImpl column = new ColumnImpl(getName()+"."+getColumn(i).getHeader());
+            for(int j = 0; j<getColumn(i).count(); j++){
+                for(int k = 0; k<rightTable.getColumn(0).count(); k++){
+                    try {
+                        if (getColumn(leftHeader).getValue(j).equals(rightTable.getColumn(rightHeader).getValue(k)))
+                            column.cell.add(getColumn(i).getValue(j));
+                    }
+                    catch (Exception e){}
+                }
+            }
+            table.columns.add(column);
+        }
+        for(int i = 0; i<rightTable.getColumnCount(); i++){
+            ColumnImpl column = new ColumnImpl(rightTable.getName()+"."+rightTable.getColumn(i).getHeader());
+            for(int j = 0; j<getColumn(0).count(); j++){
+                for(int k = 0; k<rightTable.getColumn(i).count(); k++){
+                    try {
+                        if (getColumn(leftHeader).getValue(j).equals(rightTable.getColumn(rightHeader).getValue(k)))
+                            column.cell.add(rightTable.getColumn(i).getValue(k));
+                    }
+                    catch (Exception e){}
+                }
+            }
+            table.columns.add(column);
+        }
+        boolean[] isAdded = new boolean[getRowCount()];
+        for (int i = 0; i<getColumnCount(); i++){
+            for(int j = 0; j<getColumn(0).count(); j++){
+                for(int k = 0; k<rightTable.getColumn(0).count(); k++){
+                    try {
+                        if (getColumn(leftHeader).getValue(j).equals(rightTable.getColumn(rightHeader).getValue(k)))
+                            isAdded[j] = true;
+                    }
+                    catch (Exception e){}
+                }
+                if(!isAdded[j]) {
+                    for (int k = 0; k < this.getColumnCount(); k++) {
+                        table.columns.get(k).cell.add(this.columns.get(k).cell.get(j));
+                    }
+                    for (int k = 0; k < rightTable.getColumnCount(); k++) {
+                        table.columns.get(k + this.getColumnCount()).cell.add(null);
+                    }
+                    isAdded[j] = true;
+                }
+            }
+        }
+
+        return table;
+    } // 코드가 넘 비효율적임 수정하기
 
     @Override
     public Table fullOuterJoin(Table rightTable, List<JoinColumn> joinColumns) {
-        return null;
+        String leftHeader = joinColumns.get(0).getColumnOfThisTable();
+        String rightHeader = joinColumns.get(0).getColumnOfAnotherTable();
+        TableImpl table = new TableImpl();
+        table.name = this.getName();
+        for(int i = 0; i<columns.size(); i++){
+            ColumnImpl column = new ColumnImpl(getName()+"."+getColumn(i).getHeader());
+            for(int j = 0; j<getColumn(i).count(); j++){
+                for(int k = 0; k<rightTable.getColumn(0).count(); k++){
+                    try {
+                        if (getColumn(leftHeader).getValue(j).equals(rightTable.getColumn(rightHeader).getValue(k)))
+                            column.cell.add(getColumn(i).getValue(j));
+                    }
+                    catch (Exception e){}
+                }
+            }
+            table.columns.add(column);
+        }
+        for(int i = 0; i<rightTable.getColumnCount(); i++){
+            ColumnImpl column = new ColumnImpl(rightTable.getName()+"."+rightTable.getColumn(i).getHeader());
+            for(int j = 0; j<getColumn(0).count(); j++){
+                for(int k = 0; k<rightTable.getColumn(i).count(); k++){
+                    try {
+                        if (getColumn(leftHeader).getValue(j).equals(rightTable.getColumn(rightHeader).getValue(k)))
+                            column.cell.add(rightTable.getColumn(i).getValue(k));
+                    }
+                    catch (Exception e){}
+                }
+            }
+            table.columns.add(column);
+        }
+        boolean[] isAddedLeft = new boolean[getRowCount()];
+        boolean[] isAddedRight = new boolean[rightTable.getRowCount()];
+        for (int i = 0; i<getColumnCount(); i++){
+            for(int j = 0; j<getColumn(0).count(); j++){
+                for(int k = 0; k<rightTable.getColumn(0).count(); k++){
+                    try {
+                        if (getColumn(leftHeader).getValue(j).equals(rightTable.getColumn(rightHeader).getValue(k))) {
+                            isAddedLeft[j] = true;
+                            isAddedRight[k] = true;
+                        }
+                    }
+                    catch (Exception e){}
+                }
+                if(!isAddedLeft[j]) {
+                    for (int k = 0; k < this.getColumnCount(); k++) {
+                        table.columns.get(k).cell.add(this.columns.get(k).cell.get(j));
+                    }
+                    for (int k = 0; k < rightTable.getColumnCount(); k++) {
+                        table.columns.get(k + this.getColumnCount()).cell.add(null);
+                    }
+                    isAddedLeft[j] = true;
+                }
+            }
+        }
+
+        for(int i = 0; i<isAddedRight.length; i++){
+            if(!isAddedRight[i]){
+                for(int j = 0; j<getColumnCount(); j++){
+                    table.columns.get(j).cell.add(null);
+                }
+                for(int j = 0; j<rightTable.getColumnCount(); j++){
+                    table.columns.get(j+this.getColumnCount()).cell.add(rightTable.getColumn(j).getValue(i));
+                }
+            }
+        }
+
+        return table;
     }
 
     @Override
@@ -259,7 +383,31 @@ class TableImpl implements Table {
 
     @Override
     public <T> Table selectRowsBy(String columnName, Predicate<T> predicate) {
-        return null;
+        TableImpl table = new TableImpl();
+        table.name = this.getName();
+        Column column = getColumn(columnName);
+        boolean[] a = new boolean[getRowCount()];
+        if(!column.isNumericColumn()) {
+            for (int i = 0; i < a.length; i++) {
+
+                try {
+                    if (predicate.test((T) column.getValue(i))) a[i] = true;
+                }
+                catch (Exception e) { }
+            }
+        }
+        else{
+            for (int i = 0; i < a.length; i++) {
+                try {
+                    if (predicate.test((T) column.getValue(i,Integer.class))) a[i] = true;
+                }
+                catch (Exception e){}
+            }
+        }
+        for(int i = 0; i<getColumnCount(); i++){
+            table.columns.add(columns.get(i).selectRow(a));
+        }
+        return table;
     }
 
     @Override

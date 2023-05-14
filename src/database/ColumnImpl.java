@@ -1,7 +1,7 @@
 package database;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+ import java.util.Iterator;
 import java.util.List;
 
 class ColumnImpl implements Column {
@@ -25,10 +25,17 @@ class ColumnImpl implements Column {
         }
         return column;
     }
+    ColumnImpl selectRow(boolean[] indices){
+        ColumnImpl column = new ColumnImpl(header);
+        for(int i = 0; i<indices.length; i++){
+            if(indices[i])
+                column.cell.add(this.cell.get(i));
+        }
+        return column;
+    }
     int nonNull(){
         int cnt = cell.size();
-        for(int i = 0; i< cell.size(); i++)
-            if(cell.get(i) == null) cnt--;
+        for (String s : cell) if (s == null) cnt--;
         return cnt;
     }
     ColumnImpl(String header){
@@ -47,6 +54,18 @@ class ColumnImpl implements Column {
 
     @Override
     public <T extends Number> T getValue(int index, Class<T> t) {
+        String cellValue = cell.get(index);
+
+        try {
+            if (t == Double.class) {
+                return t.cast(Double.parseDouble(cellValue));  // Double로 캐스팅하여 반환
+            } else if (t == Integer.class) {
+                return t.cast(Integer.parseInt(cellValue));  // Integer로 캐스팅하여 반환
+            } else if (t == Long.class) {
+                return t.cast(Long.parseLong(cellValue));  // Long으로 캐스팅하여 반환
+            }
+        }
+        catch (Exception e){ return null; }
         return null;
     } // 얘는 아직 구현x
 
@@ -75,20 +94,17 @@ class ColumnImpl implements Column {
 
     @Override
     public boolean isNumericColumn() {
-        for(int i = 0; i< cell.size(); i++){
+        for (String s : cell) {
             try {
-                if(cell.get(i) == null) continue;
-                else Integer.parseInt(cell.get(i));
-            }
-            catch (Exception e){
+                if (s == null) continue;
+                else Integer.parseInt(s);
+            } catch (Exception e) {
                 try {
-                    Double.parseDouble(cell.get(i));
-                }
-                catch (Exception f){
+                    Double.parseDouble(s);
+                } catch (Exception f) {
                     return false;
                 }
             }
-            return true;
         }
         return true;
 //        int returnInt;
