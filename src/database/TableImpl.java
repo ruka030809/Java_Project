@@ -1,9 +1,5 @@
 package database;
 
-import database.Column;
-import database.JoinColumn;
-import database.Table;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -13,6 +9,26 @@ class TableImpl implements Table {
 
     String name;
     List<ColumnImpl> columns = new ArrayList<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TableImpl table = (TableImpl) o;
+        return Objects.equals(name, table.name);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+
+    @Override
+    public String toString() {
+        return "database.Table@" + Integer.toHexString(hashCode());
+    }
+
     TableImpl(){ }
     TableImpl(File f) throws FileNotFoundException {
         String[] str = f.getName().split(".csv");
@@ -42,11 +58,10 @@ class TableImpl implements Table {
         }
     }
 
-
     @Override
     public Table crossJoin(Table rightTable) {
         TableImpl table = new TableImpl();
-        table.name = this.getName();
+//        table.name = this.getName();
         for(int i = 0; i<columns.size(); i++){
             ColumnImpl column = new ColumnImpl(getName()+"."+getColumn(i).getHeader());
             for(int j = 0; j<getColumn(i).count(); j++){
@@ -75,7 +90,7 @@ class TableImpl implements Table {
         String leftHeader = joinColumns.get(0).getColumnOfThisTable();
         String rightHeader = joinColumns.get(0).getColumnOfAnotherTable();
         TableImpl table = new TableImpl();
-        table.name = this.getName();
+//        table.name = this.getName();
         for(int i = 0; i<columns.size(); i++){
             ColumnImpl column = new ColumnImpl(getName()+"."+getColumn(i).getHeader());
             for(int j = 0; j<getColumn(i).count(); j++){
@@ -111,7 +126,7 @@ class TableImpl implements Table {
         String leftHeader = joinColumns.get(0).getColumnOfThisTable();
         String rightHeader = joinColumns.get(0).getColumnOfAnotherTable();
         TableImpl table = new TableImpl();
-        table.name = this.getName();
+//        table.name = this.getName();
         for(int i = 0; i<columns.size(); i++){
             ColumnImpl column = new ColumnImpl(getName()+"."+getColumn(i).getHeader());
             for(int j = 0; j<getColumn(i).count(); j++){
@@ -168,7 +183,7 @@ class TableImpl implements Table {
         String leftHeader = joinColumns.get(0).getColumnOfThisTable();
         String rightHeader = joinColumns.get(0).getColumnOfAnotherTable();
         TableImpl table = new TableImpl();
-        table.name = this.getName();
+//        table.name = this.getName();
         for(int i = 0; i<columns.size(); i++){
             ColumnImpl column = new ColumnImpl(getName()+"."+getColumn(i).getHeader());
             for(int j = 0; j<getColumn(i).count(); j++){
@@ -242,20 +257,20 @@ class TableImpl implements Table {
     @Override
     public void show() {
         for(int i = 0; i<columns.size(); i++){
-            columns.get(i).longgest = columns.get(i).header.length();
+            columns.get(i).longest = columns.get(i).header.length();
             for (int j = 0; j<columns.get(0).cell.size(); j++){
-                if(columns.get(i).getValue(j) == null) columns.get(i).longgest = Math.max(4,columns.get(i).longgest);
-                else columns.get(i).longgest = Math.max(columns.get(i).getValue(j).length(),columns.get(i).longgest);
+                if(columns.get(i).getValue(j) == null) columns.get(i).longest = Math.max(4,columns.get(i).longest);
+                else columns.get(i).longest = Math.max(columns.get(i).getValue(j).length(),columns.get(i).longest);
             }
         }
         for(int i = 0; i<columns.size(); i++){
-            System.out.printf(" %"+columns.get(i).longgest+"s |",columns.get(i).header);
+            System.out.printf(" %"+columns.get(i).longest +"s |",columns.get(i).header);
         }
         System.out.println();
 
         for(int j = 0; j<columns.get(0).cell.size(); j++){
             for(int i = 0; i<columns.size(); i++){
-                System.out.printf(" %"+columns.get(i).longgest+"s |",columns.get(i).getValue(j));
+                System.out.printf(" %"+columns.get(i).longest +"s |",columns.get(i).getValue(j));
             }
             System.out.println();
         }
@@ -264,7 +279,7 @@ class TableImpl implements Table {
 
     @Override
     public void describe() {
-        System.out.println("<database.Table@"+Integer.toHexString(hashCode())+">");
+        System.out.println("<"+this+">");
         System.out.println("RangeIndex: " + columns.get(0).cell.size() +" entries, 0 to " + (columns.get(0).cell.size()-1));
         System.out.println("Data columns (total " + columns.size() + " columns):");
         int maxNum = (""+columns.size()).length();
@@ -294,9 +309,9 @@ class TableImpl implements Table {
     public Table head() {
         int lineCount = Math.min(5,columns.get(0).cell.size());
         TableImpl table = new TableImpl();
-        table.name = this.getName();
+//        table.name = this.getName();
         for(int i = 0; i<columns.size(); i++){
-            table.columns.add(columns.get(i).getColumnPartition(0,lineCount-1));
+            table.columns.add(columns.get(i).getColumnPartition(0,lineCount));
         }
         return table;
     }
@@ -305,9 +320,9 @@ class TableImpl implements Table {
     public Table head(int lineCount) {
         lineCount = Math.min(lineCount,columns.get(0).cell.size());
         TableImpl table = new TableImpl();
-        table.name = this.getName();
+//        table.name = this.getName();
         for(int i = 0; i<columns.size(); i++){
-            table.columns.add(columns.get(i).getColumnPartition(0,lineCount-1));
+            table.columns.add(columns.get(i).getColumnPartition(0,lineCount));
         }
         return table;
     }
@@ -316,9 +331,9 @@ class TableImpl implements Table {
     public Table tail() {
         int lineCount = Math.min(5,columns.get(0).cell.size()); //4
         int startIndex = columns.get(0).cell.size() - lineCount;
-        int endIndex = columns.get(0).cell.size() - 1;
+        int endIndex = columns.get(0).cell.size();
         TableImpl table = new TableImpl();
-        table.name = this.getName();
+//        table.name = this.getName();
         for (int i = 0; i<columns.size(); i++){
             table.columns.add(columns.get(i).getColumnPartition(startIndex,endIndex));
         }
@@ -329,9 +344,9 @@ class TableImpl implements Table {
     public Table tail(int lineCount) {
         lineCount = Math.min(lineCount,columns.get(0).cell.size()); //4
         int startIndex = columns.get(0).cell.size() - lineCount;
-        int endIndex = columns.get(0).cell.size() - 1;
+        int endIndex = columns.get(0).cell.size();
         TableImpl table = new TableImpl();
-        table.name = this.getName();
+//        table.name = this.getName();
         for (int i = 0; i<columns.size(); i++){
             table.columns.add(columns.get(i).getColumnPartition(startIndex,endIndex));
         }
@@ -342,9 +357,9 @@ class TableImpl implements Table {
     @Override
     public Table selectRows(int beginIndex, int endIndex) {
         TableImpl table = new TableImpl();
-        table.name = this.getName();
+//        table.name = this.getName();
         for (int i = 0; i<columns.size(); i++){
-            table.columns.add(columns.get(i).getColumnPartition(beginIndex,endIndex-1));
+            table.columns.add(columns.get(i).getColumnPartition(beginIndex,endIndex));
         }
         return table;
     } // 예외 발생 가능
@@ -352,7 +367,7 @@ class TableImpl implements Table {
     @Override
     public Table selectRowsAt(int... indices) {
         TableImpl table = new TableImpl();
-        table.name = this.getName();
+//        table.name = this.getName();
         for(int i = 0; i<columns.size(); i++){
 
             table.columns.add(columns.get(i).selectRow(indices));
@@ -364,9 +379,14 @@ class TableImpl implements Table {
     @Override
     public Table selectColumns(int beginIndex, int endIndex) {
         TableImpl table = new TableImpl();
-        table.name = this.getName();
+//        table.name = this.getName();
         for(int i = beginIndex; i<endIndex; i++){
-            table.columns.add(this.columns.get(i));//
+//            ColumnImpl column = new ColumnImpl(columns.get(i).getHeader());
+//            for(int j = 0; j<columns.get(i).count(); j++){
+//                column.cell.add(columns.get(i).getValue(j));
+//            }
+            ColumnImpl column = columns.get(i).getColumnPartition(0,columns.get(i).count());
+            table.columns.add(column);//
         }
         return table;
     } // 이거 칼럼도 새로 생생해서 add해주는 게 더 나을듯 아래 selectColumnsAt 도 똑같이 수정하기.
@@ -374,9 +394,10 @@ class TableImpl implements Table {
     @Override
     public Table selectColumnsAt(int... indices) {
         TableImpl table = new TableImpl();
-        table.name = this.getName();
+//        table.name = this.getName();
         for(int i : indices){
-            table.columns.add(this.columns.get(i));//
+            ColumnImpl column = columns.get(i).getColumnPartition(0,columns.get(i).count());
+            table.columns.add(column);//
         }
         return table;
     }
@@ -384,7 +405,7 @@ class TableImpl implements Table {
     @Override
     public <T> Table selectRowsBy(String columnName, Predicate<T> predicate) {
         TableImpl table = new TableImpl();
-        table.name = this.getName();
+//        table.name = this.getName();
         Column column = getColumn(columnName);
         boolean[] a = new boolean[getRowCount()];
         if(!column.isNumericColumn()) {
@@ -416,10 +437,13 @@ class TableImpl implements Table {
 
         final Comparator<String> comparator;
         if (isAscending) {
-            comparator = Comparator.nullsLast(Comparator.naturalOrder());
+            if(isNullFirst) comparator = Comparator.nullsFirst(Comparator.naturalOrder());
+            else comparator = Comparator.nullsLast(Comparator.naturalOrder());
         } else {
-            comparator = Comparator.nullsFirst(Comparator.reverseOrder());
+            if(isNullFirst) comparator = Comparator.nullsFirst(Comparator.reverseOrder());
+            else comparator = Comparator.nullsLast(Comparator.reverseOrder());
         }
+
 
         List<String[]> rows = new ArrayList<>();
         int numRows = columns.get(0).cell.size();

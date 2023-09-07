@@ -1,22 +1,19 @@
 package database;
 
 import java.util.ArrayList;
- import java.util.Iterator;
-import java.util.List;
 
 class ColumnImpl implements Column {
     String header;
     ArrayList<String> cell;
-
-    int longgest = 0;
+    int longest = 0;
 
     ColumnImpl getColumnPartition(int startIndex, int endIndex){
         ColumnImpl column = new ColumnImpl(header);
-        for(int i = startIndex; i<=endIndex; i++){
+        for(int i = startIndex; i<endIndex; i++){
             column.cell.add(this.cell.get(i));
         }
         return column;
-    }
+    } // start 랑 end랑 같은애들 처리해주셈
 
     ColumnImpl selectRow(int... indices){
         ColumnImpl column = new ColumnImpl(header);
@@ -67,7 +64,7 @@ class ColumnImpl implements Column {
         }
         catch (Exception e){ return null; }
         return null;
-    } // 얘는 아직 구현x
+    }
 
     @Override
     public void setValue(int index, String value) {
@@ -123,7 +120,7 @@ class ColumnImpl implements Column {
 //        }
 //
 //        return true;
-    } // 다시 구현
+    } // o
 
     @Override
     public long getNullCount() {
@@ -132,5 +129,5 @@ class ColumnImpl implements Column {
             if(tmp == null) cnt++;
         }
         return cnt;
-    }//대충 맞음 확인하기
+    }// o
 }

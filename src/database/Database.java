@@ -12,7 +12,7 @@ public class Database {
 
     // 테이블 이름 목록을 출력한다.
     public static void showTables() {
-        Iterator<Table>  iterator = tables.iterator();
+        Iterator<Table> iterator = tables.iterator();
         while(iterator.hasNext()){
             System.out.println(iterator.next().getName());
         }
